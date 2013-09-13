@@ -39,7 +39,7 @@
 			</c:if>
 			
 			<c:if test="${member.level == 0}">
-				<h2>
+				<h1>
 					My Project<a href="<%=application.getContextPath()%>/project/list.do">[All]</a>
 					<ul>
 						<%for (MemberProject memproject : myprojects) {%>
@@ -48,7 +48,7 @@
 								<%=(memproject.getLevel() == 1) ? "(PL)" : ""%></a></li>
 						<%}%>
 					</ul>
-				</h2>
+				</h1>
 			</c:if>
 			<h3>
 				Member Info.<br>

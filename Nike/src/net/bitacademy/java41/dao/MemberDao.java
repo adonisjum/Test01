@@ -17,6 +17,12 @@ public class MemberDao {
 		this.conPool = conPool;
 	}
 	
+	public MemberDao setConPool(DBConnectionPool conPool) {
+		this.conPool = conPool;
+		return this;
+	}
+	public MemberDao(){}
+
 	public Member getMember(String email, String password) throws Exception {
 		Connection con = null;
 		PreparedStatement stmt = null;
@@ -82,7 +88,7 @@ public class MemberDao {
 			
 		} finally {
 			try {stmt.close();} catch(Exception e) {}
-			if (con != null) {
+			if (con != null && con.getAutoCommit()) {
 				conPool.returnConnection(con);
 			}
 		}
@@ -217,7 +223,7 @@ public class MemberDao {
 		
 		} finally {
 			try {stmt.close();} catch(Exception e) {}
-			if (con != null) {
+			if (con != null && con.getAutoCommit()) {
 				conPool.returnConnection(con);
 			}
 		}
@@ -240,7 +246,7 @@ public class MemberDao {
 			
 		} finally {
 			try {stmt.close();} catch(Exception e) {}
-			if (con != null) {
+			if (con != null && con.getAutoCommit()) {
 				conPool.returnConnection(con);
 			}
 		}

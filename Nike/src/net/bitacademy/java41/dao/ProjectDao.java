@@ -14,10 +14,16 @@ import net.bitacademy.java41.vo.Project;
 public class ProjectDao {
 	DBConnectionPool conPool;
 
+	public void setConPool(DBConnectionPool conPool) {
+		this.conPool = conPool;
+	}
+
 	public ProjectDao(DBConnectionPool conPool) {
 		this.conPool = conPool;
 	}
 
+	public ProjectDao(){}
+	
 	public List<Project> list() throws Exception {
 		Connection con = null;
 		Statement stmt = null;
@@ -143,55 +149,46 @@ public class ProjectDao {
 		}
 	}
 
-	public int add(Project project) throws Exception {
-		Connection con = null;
+	public int add(Project project, Connection transactionConnection) throws Exception {
+		Connection con = transactionConnection;
 		PreparedStatement projectStmt = null;
 		PreparedStatement projectMemberStmt = null;
 		ResultSet rs = null;
-
+		
 		try {
-			con = conPool.getConnection();
-
-			projectStmt = con.prepareStatement("insert into SPMS_PRJS("
-					+ " TITLE,CONTENT,START_DATE,END_DATE,TAG)"
-					+ " values(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			projectStmt = con.prepareStatement(
+				"insert into SPMS_PRJS("
+				+ " TITLE,CONTENT,START_DATE,END_DATE,TAG)"
+				+ " values(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			projectStmt.setString(1, project.getTitle());
 			projectStmt.setString(2, project.getContent());
 			projectStmt.setDate(3, project.getStartDate());
 			projectStmt.setDate(4, project.getEndDate());
 			projectStmt.setString(5, project.getTag());
 			projectStmt.executeUpdate();
-
+			
 			rs = projectStmt.getGeneratedKeys();
 			if (rs.next()) {
-				project.setNo(rs.getInt(1));
+				project.setNo( rs.getInt(1) );
 			}
-
-			projectMemberStmt = con
-					.prepareStatement("insert into SPMS_PRJMEMB("
-							+ " EMAIL,PNO,LEVEL)" + " values(?,?,0)");
+			
+			projectMemberStmt = con.prepareStatement(
+					"insert into SPMS_PRJMEMB("
+					+ " EMAIL,PNO,LEVEL)"
+					+ " values(?,?,0)");
 			projectMemberStmt.setString(1, project.getLeader());
 			projectMemberStmt.setInt(2, project.getNo());
 			projectMemberStmt.executeUpdate();
-
+			
 			return project.getNo();
-
+			
 		} catch (Exception e) {
 			throw e;
-
+			
 		} finally {
-			try {
-				rs.close();
-			} catch (Exception e) {
-			}
-			try {
-				projectStmt.close();
-			} catch (Exception e) {
-			}
-			try {
-				projectMemberStmt.close();
-			} catch (Exception e) {
-			}
+			try {rs.close();} catch(Exception e) {}
+			try {projectStmt.close();} catch(Exception e) {}
+			try {projectMemberStmt.close();} catch(Exception e) {}
 		}
 	}
 

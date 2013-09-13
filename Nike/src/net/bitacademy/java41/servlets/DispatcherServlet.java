@@ -61,8 +61,6 @@ public class DispatcherServlet extends HttpServlet {
 
 	private void transferFromControlDataToRequest(HttpServletRequest request,
 			HashMap<String, Object> model) {
-		// 페이지 컨트롤러에서 작업한 데이터를 JSP에서 꺼내쓸 수 있도록
-		// ServletRequest 저장소에 옮겨 실어야 한다.
 		Set<String> keyList = model.keySet();
 		for(String key : keyList) {
 			if (!key.equals("cookies") && !key.equals("params")) {
